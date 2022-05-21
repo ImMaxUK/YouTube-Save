@@ -29,7 +29,7 @@ npm install ytsave -g
 ## Usage
 
 ```sh
-ytsave [url]
+npx ytsave [url]
 ```
 
 ## Author
