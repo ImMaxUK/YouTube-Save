@@ -61,7 +61,7 @@ async function dlVideo() {
 
   console.log(__dirname)
     
-  stream.pipe(fs.createWriteStream(process.argv[2] ? `${__dirname}/${details.title}.mp3` : `./output/${details.title}.mp3`))
+  stream.pipe(fs.createWriteStream(`${__dirname}/${details.title}.mp3`))
 
   stream.on('info', () => {
     spinner = createSpinner(`Downloading ${video}...`)
