@@ -14,7 +14,7 @@
 
 > An easy to use command line interface for downloading YouTube Media
 
-This project currently only has native support for downloading **audio only**. I will create an update for video as soon as possible.
+This project currently has native support for downloading **audio only**. I will create an update for video as soon as possible.
 
 ### 🏠 [Homepage](https://github.com/ImMaxUK/youtube-dl-cli#readme)
 
