@@ -23,13 +23,13 @@ This project currently has native support for downloading **audio only**. I will
 ## Install
 
 ```sh
-npm install
+npm install ytsave -g
 ```
 
 ## Usage
 
 ```sh
-node index.js
+ytsave [url]
 ```
 
 ## Author
