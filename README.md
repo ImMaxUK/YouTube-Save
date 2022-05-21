@@ -16,6 +16,8 @@
 
 This project currently has native support for downloading **audio only**. I will create an update for video as soon as possible.
 
+![Preview](https://i.maxuk.me/ZoSA7/jaVipeKe29/raw.gif)
+
 ### 🏠 [Homepage](https://github.com/ImMaxUK/youtube-dl-cli#readme)
 
 ## Install
