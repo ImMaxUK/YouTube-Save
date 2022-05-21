@@ -57,7 +57,7 @@ async function dlVideo() {
 
   const stream = youtube.download(video, options)
     
-  stream.pipe(fs.createWriteStream(`${__dirname}/${details.title}.mp3`))
+  stream.pipe(fs.createWriteStream(`./${details.title}.mp3`))
 
   stream.on('info', () => {
     spinner = createSpinner(`Downloading ${video}...`)
