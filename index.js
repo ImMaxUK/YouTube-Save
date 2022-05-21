@@ -26,7 +26,6 @@ async function boot() {
       
       ${chalk.yellow('🌟 Please give the repository a star if you find this useful!')}
     `);
-
   const answers = await inquirer.prompt({
     name: 'url',
     type: 'input',
@@ -37,7 +36,9 @@ async function boot() {
   })
 
   video = answers.url
+}
 
+async function dlVideo() {
   const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?/;
   const match = video.match(regex);
   try {
@@ -68,4 +69,10 @@ async function boot() {
 
 }
 
-await boot()
+if (process.argv[2]) {
+  video = process.argv[2]
+  await dlVideo()
+} else {
+  await boot()
+  await dlVideo()
+}
