@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ImMaxUK/youtube-dl-cli.git"
+    "url": "git+https://github.com/ImMaxUK/youtube-save.git"
   },
   "keywords": [],
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ImMaxUK/youtube-dl-cli/issues"
+    "url": "https://github.com/ImMaxUK/youtube-save/issues"
   },
-  "homepage": "https://github.com/ImMaxUK/youtube-dl-cli#readme",
+  "homepage": "https://github.com/ImMaxUK/youtube-save#readme",
   "dependencies": {
     "chalk": "^5.0.1",
     "inquirer": "^8.2.4",
