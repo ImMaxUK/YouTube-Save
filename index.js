@@ -71,7 +71,7 @@ async function dlVideo() {
     spinner.update({ text: `Downloading ${video}... (${info.percentage}% complete)` })
   })
   stream.on('end', () => {
-    spinner.success({ text: `Downloaded ${video}. File saved to /output/${details.title}.mp3` })
+    spinner.success({ text: `Downloaded ${video}. File saved as ${details.title}.mp3` })
   })
 
 }
