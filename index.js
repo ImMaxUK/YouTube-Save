@@ -56,10 +56,6 @@ async function dlVideo() {
   details.title = details.title.replace(/[/\\?%*:|"<>]/g, '-');
 
   const stream = youtube.download(video, options)
-
-  if (!fs.existsSync('./output')) { fs.mkdirSync('./output'); } 
-
-  console.log(__dirname)
     
   stream.pipe(fs.createWriteStream(`${__dirname}/${details.title}.mp3`))
 
