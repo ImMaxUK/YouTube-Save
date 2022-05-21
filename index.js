@@ -5,9 +5,14 @@ import inquirer from 'inquirer'
 import { createSpinner } from 'nanospinner'
 import Innertube from 'youtubei.js'
 import fs from 'fs'
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 let video
 let spinner
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const youtube = await new Innertube();
 
@@ -52,9 +57,11 @@ async function dlVideo() {
 
   const stream = youtube.download(video, options)
 
-  if (!fs.existsSync('./output')) { fs.mkdirSync('./output'); }
+  if (!fs.existsSync('./output')) { fs.mkdirSync('./output'); } 
 
-  stream.pipe(fs.createWriteStream(`./output/${details.title}.mp3`))
+  console.log(__dirname)
+    
+  stream.pipe(fs.createWriteStream(process.argv[2] ? `${__dirname}/${details.title}.mp3` : `./output/${details.title}.mp3`))
 
   stream.on('info', () => {
     spinner = createSpinner(`Downloading ${video}...`)
