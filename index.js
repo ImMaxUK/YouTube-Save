@@ -3,17 +3,20 @@
 import chalk from 'chalk'
 import inquirer from 'inquirer'
 import { createSpinner } from 'nanospinner'
-import Innertube from 'youtubei.js'
+import ytdl from 'ytdl-core';
 import fs from 'fs'
+import cliProgress from 'cli-progress'
+import dotenv from 'dotenv'
+
+process.env.YTDL_NO_UPDATE = false
 
 let video
 let spinner
-
-const youtube = await new Innertube();
+let bar
 
 const options = {
-  format: 'mp4',
-  type: 'audio',
+  format: 'mp3',
+  quality: 'highestaudio',
 };
 
 const sleep = (ms = 2000) => new Promise(r => setTimeout(r, ms))
@@ -46,23 +49,27 @@ async function dlVideo() {
   } catch (err) {
     return console.log(chalk.bgRed('ERR') + ' Invalid URL! Please retry with a YouTube URL.')
   }
+  
+  const videoData = await ytdl.getBasicInfo(`https://www.youtube.com/watch?v=${video}`);
+  const stream = await ytdl(video, options)
 
-  const details = await youtube.getDetails(video)
-  details.title = details.title.replace(/[/\\?%*:|"<>]/g, '-');
+  console.log(chalk.bgGreen('OK') + ' Downloading requested video(s)...')
 
-  const stream = youtube.download(video, options)
+  var fileName = videoData.videoDetails.title.replace(/[/\\?%*:|"<>]/g, '-') + '.mp3';
 
-  stream.pipe(fs.createWriteStream(`${process.cwd()}/${details.title}.mp3`))
+  stream.pipe(fs.createWriteStream(`${process.cwd()}/${fileName}`))
 
+  const bar = new cliProgress.SingleBar({ format: ` ${chalk.greenBright('»')} \u001b[35m{bar}\u001b[0m {percentage}% - ${videoData.videoDetails.title}`, barCompleteChar: '━', barIncompleteChar: '━', barGlue: '\u001b[0m', fps: 10 }, cliProgress.Presets.shades_classic);
+  
   stream.on('info', () => {
-    spinner = createSpinner(`Downloading ${video}...`)
-    spinner.start()
+    bar.start(100, 0)
   })
-  stream.on('progress', (info) => {
-    spinner.update({ text: `Downloading ${video}... (${info.percentage}% complete)` })
+  stream.on('progress', (info, a, b) => {
+    bar.update(Math.floor((a / b) * 100))
   })
   stream.on('end', () => {
-    spinner.success({ text: `Downloaded ${video}. File saved as ${details.title}.mp3` })
+    bar.stop()
+    console.log(chalk.green('✓') + ' Successfully saved video(s) to ' + chalk.green(`${process.cwd()}`))
   })
 
 }

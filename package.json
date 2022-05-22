@@ -1,6 +1,6 @@
 {
   "name": "ytsave",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -21,9 +21,12 @@
   "homepage": "https://github.com/ImMaxUK/youtube-save#readme",
   "dependencies": {
     "chalk": "^5.0.1",
+    "cli-progress": "^3.11.1",
+    "dotenv": "^16.0.1",
     "inquirer": "^8.2.4",
     "nanospinner": "^1.1.0",
     "youtubei.js": "^1.4.2-d.9",
+    "ytdl-core": "^4.11.0",
     "ytsave": "^2.1.2"
   }
 }
