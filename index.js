@@ -1,25 +1,72 @@
 #!/usr/bin/env node
 
-import chalk from 'chalk'
-import inquirer from 'inquirer'
-import { createSpinner } from 'nanospinner'
-import ytdl from 'ytdl-core';
-import fs from 'fs'
-import cliProgress from 'cli-progress'
-import dotenv from 'dotenv'
+import chalk from 'chalk';
+import inquirer from 'inquirer';
+import { cli } from 'cleye';
+import path from 'path';
+import fs from 'fs';
 
-process.env.YTDL_NO_UPDATE = false
+// parse args
+export const argv = cli({
+  name: "ytsave",
 
-let video
-let spinner
-let bar
+  parameters: [
+    '[video]' // the video to download
+  ],
 
-const options = {
-  format: 'mp3',
-  quality: 'highestaudio',
-};
+  // options
+  flags: {
+    "enable-ytdl-warnings": {
+      type: Boolean,
+      description: "Enable warnings from ytdl-core",
+      default: false
+    },
 
-const sleep = (ms = 2000) => new Promise(r => setTimeout(r, ms))
+    "output-dir": {
+      type: String,
+      description: "The output directory to save the video to",
+      default: ".",
+      alias: "o"
+    },
+
+    "yes": {
+      type: Boolean,
+      description: "Automatically say yes to any prompts",
+      default: false,
+      alias: "y"
+    },
+
+    "playlist-limit": {
+      type: Number,
+      description: "The maximum number of videos to download from a playlist (-1 for no limit)",
+      default: -1,
+      alias: "l"
+    }
+  }
+});
+
+// unless user wants to see if ytdl has an update, we can skip the update check
+process.env.YTDL_NO_UPDATE = process.env.YTDL_NO_UPDATE ?? argv.flags['enable-ytdl-warnings'] ?? false;
+
+// check if output dir exists
+export const outputDir = path.resolve(process.cwd(), argv.flags['output-dir']);
+if (!fs.existsSync(outputDir)) {
+  const { 
+    create
+  } = argv.flags.yes ? {
+    create: "y"
+  } : await inquirer.prompt({
+    name: 'create',
+    type: 'input',
+    message: chalk.yellow('Output directory does not exist! Would you like to create it? [Y/n]'),
+  });
+
+  if (create.toLowerCase() === 'y') {
+    fs.mkdirSync(outputDir);
+  } else {
+    process.exit(1);
+  }
+}
 
 async function boot() {
   console.log(`
@@ -38,46 +85,15 @@ async function boot() {
     }
   })
 
-  video = answers.url
+  return answers.url
 }
 
-async function dlVideo() {
-  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?/;
-  const match = video.match(regex);
-  try {
-    video = match[1];
-  } catch (err) {
-    return console.log(chalk.bgRed('ERR') + ' Invalid URL! Please retry with a YouTube URL.')
-  }
-  
-  const videoData = await ytdl.getBasicInfo(`https://www.youtube.com/watch?v=${video}`);
-  const stream = await ytdl(video, options)
 
-  console.log(chalk.bgGreen('OK') + ' Downloading requested video(s)...')
+import { handleDownloadFromUserInput } from './handlers/download.js';
 
-  var fileName = videoData.videoDetails.title.replace(/[/\\?%*:|"<>]/g, '-') + '.mp3';
-
-  stream.pipe(fs.createWriteStream(`${process.cwd()}/${fileName}`))
-
-  const bar = new cliProgress.SingleBar({ format: ` ${chalk.greenBright('»')} \u001b[35m{bar}\u001b[0m {percentage}% - ${videoData.videoDetails.title}`, barCompleteChar: '━', barIncompleteChar: '━', barGlue: '\u001b[0m', fps: 10 }, cliProgress.Presets.shades_classic);
-  
-  stream.on('info', () => {
-    bar.start(100, 0)
-  })
-  stream.on('progress', (info, a, b) => {
-    bar.update(Math.floor((a / b) * 100))
-  })
-  stream.on('end', () => {
-    bar.stop()
-    console.log(chalk.green('✓') + ' Successfully saved video(s) to ' + chalk.green(`${process.cwd()}`))
-  })
-
-}
-
-if (process.argv[2]) {
-  video = process.argv[2]
-  await dlVideo()
+if (argv._.video) {
+  handleDownloadFromUserInput(argv._.video);
 } else {
-  await boot()
-  await dlVideo()
+  const video = await boot();
+  handleDownloadFromUserInput(video);
 }
